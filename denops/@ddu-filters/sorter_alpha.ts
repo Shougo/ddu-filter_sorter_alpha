@@ -3,19 +3,23 @@ import { BaseFilter } from "jsr:@shougo/ddu-vim@~6.1.0/filter";
 
 import type { Denops } from "jsr:@denops/core@~7.0.0";
 
-type Params = Record<string, never>;
+type Params = {
+  reverse: boolean;
+};
 
 export class Filter extends BaseFilter<Params> {
   override filter(args: {
     denops: Denops;
+    filterParams: Params;
     items: DduItem[];
   }): Promise<DduItem[]> {
     return Promise.resolve(args.items.sort(
-      (a, b) => a.word.localeCompare(b.word),
+      (a, b) =>
+        (args.filterParams.reverse ? -1 : 1) * a.word.localeCompare(b.word),
     ));
   }
 
   override params(): Params {
-    return {};
+    return { reverse: false };
   }
 }
